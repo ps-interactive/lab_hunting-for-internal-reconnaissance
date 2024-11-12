@@ -41,6 +41,39 @@ def create_users():
 def execute_command(user, commands):
     print(f"Executing commands for user {user}")
 
+    # Define a unique tmux session name for the user
+    session_name = f"{user}_session"
+    password = "password"  # Define the password for the user
+
+    # Start a new detached tmux session
+    subprocess.run(["tmux", "new-session", "-d", "-s", session_name], check=True)
+
+    # Loop through each command, logging and executing as the specified user
+    for i, command in enumerate(commands, start=1):
+        # Check if the command requires `sudo` and prepend password handling if so
+        if command.startswith("sudo "):
+            # Format the command with password handling using echo
+            full_command = f"echo \"{password}\" | sudo -S {command[5:]}"
+        else:
+            # Otherwise, just run the command normally
+            full_command = command
+        
+        # Wrap the command to run as the specified user with logging
+        user_command = f"su - {user} -c \"{full_command}\""
+        
+        # Send the command to the tmux session, logging progress
+        subprocess.run(["tmux", "send-keys", "-t", session_name, f"echo 'Executing command {i}/{len(commands)} as {user}: {command}'", "C-m"], check=True)
+        subprocess.run(["tmux", "send-keys", "-t", session_name, user_command, "C-m"], check=True)
+
+    # Send 'exit' to close the tmux session after all commands have run
+    subprocess.run(["tmux", "send-keys", "-t", session_name, "exit", "C-m"], check=True)
+    
+    # Kill the tmux session to clean up
+    subprocess.run(["tmux", "kill-session", "-t", session_name], check=True)
+
+def execute_command_old(user, commands):
+    print(f"Executing commands for user {user}")
+
     # Write commands to an expect script
     expect_script_path = f"/tmp/{user}_expect_script.sh"
     with open(expect_script_path, "w") as script_file:
@@ -79,6 +112,8 @@ def execute_command(user, commands):
 
     # Clean up the temporary expect script
     os.remove(expect_script_path)
+
+
 # Seed each user with a progressive attack pattern for bash history logging and auditd tracking
 def seed_user_activity():
     for user in USERS:
