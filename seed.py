@@ -10,6 +10,8 @@ import time
 import socket
 import threading
 import datetime
+import tempfile
+import logging
 
 # Run as root to simulate privileged actions and ensure full seeding
 if os.geteuid() != 0:
@@ -47,6 +49,10 @@ def execute_command(user, commands):
     session_name = f"{user}_session"
     password = "password"  # Define the password for the user
 
+    # Create a temporary file to store the output
+    with tempfile.NamedTemporaryFile(delete=False) as tmp_file:
+        output_log = tmp_file.name
+
     try:
         # Start a new detached tmux session
         subprocess.run(["tmux", "new-session", "-d", "-s", session_name], check=True)
@@ -60,29 +66,36 @@ def execute_command(user, commands):
             else:
                 full_command = command
 
-            # Wrap the command to run as the specified user with logging
-            user_command = f"su - {user} -c \"{full_command}\""
+            # Wrap the command to run as the specified user with output logging
+            user_command = f"su - {user} -c \"{full_command} >> {output_log} 2>&1\""
 
             # Log each command before sending
             log_message = f"Executing command {i}/{len(commands)} as {user}: {command}"
-            subprocess.run(["tmux", "send-keys", "-t", session_name, f"echo '{log_message}'", "C-m"], check=True)
+            subprocess.run(["tmux", "send-keys", "-t", session_name, f"echo '{log_message}' >> {output_log}", "C-m"], check=True)
             logging.info(log_message)
 
             # Send the actual command to the tmux session
-            result = subprocess.run(["tmux", "send-keys", "-t", session_name, user_command, "C-m"], check=True, capture_output=True, text=True)
-            logging.info(f"Output for command {i}: {result.stdout.strip()}")
-            if result.stderr:
-                logging.error(f"Error for command {i}: {result.stderr.strip()}")
+            subprocess.run(["tmux", "send-keys", "-t", session_name, user_command, "C-m"], check=True)
 
         # Close the session after all commands are executed
         subprocess.run(["tmux", "send-keys", "-t", session_name, "exit", "C-m"], check=True)
         subprocess.run(["tmux", "kill-session", "-t", session_name], check=True)
         logging.info(f"Closed tmux session '{session_name}' for user '{user}'")
 
+        # Read and print the output from the log file
+        with open(output_log, 'r') as f:
+            output = f.read()
+            print("Command output:\n", output)
+            logging.info("Command output:\n" + output)
+
     except subprocess.CalledProcessError as e:
         logging.error(f"Command failed: {e}")
     except Exception as e:
         logging.error(f"Unexpected error: {e}")
+    finally:
+        # Clean up by deleting the temporary output log file
+        os.remove(output_log)
+        logging.info("Temporary log file deleted.")
 
 def execute_command_old(user, commands):
     print(f"Executing commands for user {user}")
