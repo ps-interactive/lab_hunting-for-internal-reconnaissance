@@ -27,12 +27,16 @@ def create_users():
     print("Checking and creating users if needed...")
     for user in USERS:
         try:
+            # Check if the user already exists
             pwd.getpwnam(user)
             print(f"User {user} already exists")
         except KeyError:
+            # User does not exist, so create the user and set their password
             print(f"Creating user {user}")
-            subprocess.run(["useradd", "-m", user])
-            subprocess.run(["chpasswd"], input=f"{user}:password", text=True)
+            subprocess.run(["sudo", "useradd", "-m", user])
+            
+            # Set the password to "password" for the new user
+            subprocess.run(["sudo", "chpasswd"], input=f"{user}:password", text=True)
 
 def execute_command(user, commands):
     print(f"Executing commands for user {user}")
@@ -43,9 +47,16 @@ def execute_command(user, commands):
         # Set the interpreter for expect
         script_file.write("#!/usr/bin/expect -f\n")
 
+        # Define the password variable
+        script_file.write(f"set password \"password\"\n")
+
         # Start the bash session explicitly and add a progress message
         script_file.write(f"puts \"Starting interactive bash session for user {user}\"\n")
         script_file.write(f"spawn su - {user} -c \"/bin/bash -i\"\n")  # Start bash in interactive mode
+
+        # Handle password prompt
+        script_file.write("expect \"password:\"\n")
+        script_file.write("send \"$password\\r\"\n")
 
         # Loop through each command and send it with expect, including echo statements for progress
         for i, command in enumerate(commands, start=1):
@@ -380,61 +391,61 @@ def main():
     configure_auditd()
 
     # Create users if they don't exist
-    create_users()
+    #create_users()
 
     # Seed user activities
-    seed_user_activity()
+    #seed_user_activity()
 
     # Create hidden files
-    create_hidden_files()
+    #create_hidden_files()
 
     # Simulate failed login attempts
-    simulate_failed_logins()
+    #simulate_failed_logins()
 
     # Create cron jobs
-    create_cron_jobs()
+    #create_cron_jobs()
 
     # Create at jobs
-    create_at_jobs()
+    #create_at_jobs()
 
     # Start a high-CPU "worker" process
-    start_generic_process()
+    #start_generic_process()
 
     # Modify /etc/sudoers
-    modify_sudoers()
+    #modify_sudoers()
 
     # Create Setuid and Setgid files
-    create_setuid_setgid_files()
+    #create_setuid_setgid_files()
 
     # Modify /etc/hosts
-    modify_hosts_file()
+    #modify_hosts_file()
 
     # Create dummy shared object for LD_PRELOAD
-    create_dummy_shared_object()
+    #create_dummy_shared_object()
 
     # Set malicious environment variables
-    set_environment_variables()
+    #set_environment_variables()
 
     # Place tools in temporary directories
-    place_tools_in_tmp()
+    #place_tools_in_tmp()
 
     # Generate firewall logs
-    generate_firewall_logs()
+    #generate_firewall_logs()
 
     # Generate system logs
-    generate_system_logs()
+    #generate_system_logs()
 
     # Create SSH tunnel
-    create_ssh_tunnel()
+    #create_ssh_tunnel()
 
     # Start unauthorized services
-    start_unauthorized_services()
+    #start_unauthorized_services()
 
     # Manipulate ARP cache
-    manipulate_arp_cache()
+    #manipulate_arp_cache()
 
     # Wait for a moment to ensure commands are executed
-    time.sleep(5)
+    #time.sleep(5)
 
     # Remove temporary audit rules after seeding
     cleanup_auditd()
