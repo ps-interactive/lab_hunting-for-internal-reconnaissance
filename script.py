@@ -14,7 +14,7 @@ def challenge1_step2_new_users_groups():
         "news", "uucp", "proxy", "www-data", "backup", "list", "irc", "gnats",
         "nobody", "systemd-network", "systemd-resolve", "syslog", "_apt",
         "messagebus", "uuidd", "systemd-timesync", "srw134", "landscape", "tss",
-        "ntp", "pollinate", "sshd", "usbmux", "fwupd-refresh", "lxd", "tcpdump"
+        "ntp", "pollinate", "sshd", "usbmux", "fwupd-refresh", "lxd", "tcpdump", "ec2-instance-connect", "_chrony", "dnsmasq", "ubuntu"
     }
     valid_groups = {
         "root", "daemon", "bin", "sys", "adm", "tty", "disk", "lp", "mail",
@@ -25,7 +25,7 @@ def challenge1_step2_new_users_groups():
         "nogroup", "input", "systemd-journal", "systemd-network",
         "systemd-resolve", "crontab", "messagebus", "uuidd", "systemd-timesync",
         "landscape", "lxd", "render", "tcpdump", "kvm", "syslog", "ntp",
-        "fwupd-refresh", "sgx", "tss", "srw134", "_ssh"
+        "fwupd-refresh", "sgx", "tss", "srw134", "_ssh", "netdev", "_chrony", "admin", "ubuntu", "docker"
     }
 
     try:
@@ -244,17 +244,21 @@ def challenge1_step6_user_enumeration():
 def challenge1_step7_failed_logins():
     """Challenge 1, Step 8: Analyze authentication logs for failed login attempts."""
     try:
-        # Search for failed login attempts in auth.log
+        # Use journalctl with grep to find lines that contain "Failed" for error-level messages
         result = subprocess.run(
-            ["sudo", "grep", "Failed", "/var/log/auth.log"],
+            ["sudo", "journalctl", "-p", "err", "--no-pager", "|", "grep", "Failed"],
             stdout=subprocess.PIPE,
-            text=True
+            text=True,
+            shell=True  # Enables use of shell to allow piping
         )
+        
         failed_logins = result.stdout
         print("Failed login attempts:")
         print(failed_logins)
+        
     except Exception as e:
         print(f"Error analyzing authentication logs: {e}")
+
 
 def challenge1_step8_system_logs():
     """Challenge 1, Step 9: Review system logs for suspicious activities."""
