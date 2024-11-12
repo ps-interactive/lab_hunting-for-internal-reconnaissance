@@ -85,7 +85,7 @@ def seed_user_activity():
         # Add commands that access sensitive files
         commands.extend(["cat /etc/passwd", "cat /etc/shadow"])
         # Add commands that simulate network scanning
-        commands.extend(["nmap -A 127.0.0.1", "ping -c 4 8.8.8.8"])
+        commands.extend(["nmap -A 127.0.0.1", "ping -c 4 172.31.140.1"])
         execute_command(user, commands)
 
 # Create hidden files in each user’s home directory
