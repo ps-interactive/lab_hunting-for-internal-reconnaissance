@@ -39,37 +39,50 @@ def create_users():
             subprocess.run(["sudo", "chpasswd"], input=f"{user}:password", text=True)
 
 def execute_command(user, commands):
-    print(f"Executing commands for user {user}")
+    # Set up logging configuration
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
+    logging.info(f"Executing commands for user {user}")
 
     # Define a unique tmux session name for the user
     session_name = f"{user}_session"
     password = "password"  # Define the password for the user
 
-    # Start a new detached tmux session
-    subprocess.run(["tmux", "new-session", "-d", "-s", session_name], check=True)
+    try:
+        # Start a new detached tmux session
+        subprocess.run(["tmux", "new-session", "-d", "-s", session_name], check=True)
+        logging.info(f"Started tmux session '{session_name}' for user '{user}'")
 
-    # Loop through each command, logging and executing as the specified user
-    for i, command in enumerate(commands, start=1):
-        # Check if the command requires `sudo` and prepend password handling if so
-        if command.startswith("sudo "):
-            # Format the command with password handling using echo
-            full_command = f"echo \"{password}\" | sudo -S {command[5:]}"
-        else:
-            # Otherwise, just run the command normally
-            full_command = command
-        
-        # Wrap the command to run as the specified user with logging
-        user_command = f"su - {user} -c \"{full_command}\""
-        
-        # Send the command to the tmux session, logging progress
-        subprocess.run(["tmux", "send-keys", "-t", session_name, f"echo 'Executing command {i}/{len(commands)} as {user}: {command}'", "C-m"], check=True)
-        subprocess.run(["tmux", "send-keys", "-t", session_name, user_command, "C-m"], check=True)
+        # Loop through each command, logging and executing as the specified user
+        for i, command in enumerate(commands, start=1):
+            # Prepare command with sudo handling if necessary
+            if command.startswith("sudo "):
+                full_command = f"echo \"{password}\" | sudo -S {command[5:]}"
+            else:
+                full_command = command
 
-    # Send 'exit' to close the tmux session after all commands have run
-    subprocess.run(["tmux", "send-keys", "-t", session_name, "exit", "C-m"], check=True)
-    
-    # Kill the tmux session to clean up
-    subprocess.run(["tmux", "kill-session", "-t", session_name], check=True)
+            # Wrap the command to run as the specified user with logging
+            user_command = f"su - {user} -c \"{full_command}\""
+
+            # Log each command before sending
+            log_message = f"Executing command {i}/{len(commands)} as {user}: {command}"
+            subprocess.run(["tmux", "send-keys", "-t", session_name, f"echo '{log_message}'", "C-m"], check=True)
+            logging.info(log_message)
+
+            # Send the actual command to the tmux session
+            result = subprocess.run(["tmux", "send-keys", "-t", session_name, user_command, "C-m"], check=True, capture_output=True, text=True)
+            logging.info(f"Output for command {i}: {result.stdout.strip()}")
+            if result.stderr:
+                logging.error(f"Error for command {i}: {result.stderr.strip()}")
+
+        # Close the session after all commands are executed
+        subprocess.run(["tmux", "send-keys", "-t", session_name, "exit", "C-m"], check=True)
+        subprocess.run(["tmux", "kill-session", "-t", session_name], check=True)
+        logging.info(f"Closed tmux session '{session_name}' for user '{user}'")
+
+    except subprocess.CalledProcessError as e:
+        logging.error(f"Command failed: {e}")
+    except Exception as e:
+        logging.error(f"Unexpected error: {e}")
 
 def execute_command_old(user, commands):
     print(f"Executing commands for user {user}")

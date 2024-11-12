@@ -246,7 +246,7 @@ def challenge1_step7_failed_logins():
     try:
         # Use journalctl with grep to find lines that contain "Failed" for error-level messages
         result = subprocess.run(
-            ["sudo", "journalctl", "-p", "err", "--no-pager", "|", "grep", "Failed"],
+            "sudo journalctl -p err --no-pager | grep 'Failed'",
             stdout=subprocess.PIPE,
             text=True,
             shell=True  # Enables use of shell to allow piping
