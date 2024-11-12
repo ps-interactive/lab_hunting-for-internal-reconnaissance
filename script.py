@@ -133,7 +133,8 @@ def challenge1_step3_sudoers_file():
         # Verify the contents of /etc/sudoers.d directory
         sudoers_d_path = "/etc/sudoers.d"
         sudoers_d_entries = os.listdir(sudoers_d_path)
-        unauthorized_files = [entry for entry in sudoers_d_entries if entry != "README"]
+        unauthorized_files = [entry for entry in sudoers_d_entries if entry not in ["90-cloud-init-users", "README"]]
+
 
         if unauthorized_files:
             print("Unauthorized files found in '/etc/sudoers.d':")
@@ -157,17 +158,30 @@ def challenge1_step4_setuid_setgid_files():
             "/usr/bin/crontab", "/usr/bin/expiry", "/usr/bin/pkexec", "/usr/bin/fusermount3",
             "/usr/lib/dbus-1.0/dbus-daemon-launch-helper", "/usr/lib/openssh/ssh-keysign",
             "/usr/lib/x86_64-linux-gnu/utempter/utempter", "/usr/libexec/polkit-agent-helper-1",
+            "/snap/core18/2829/bin/mount", "/snap/core18/2829/bin/ping", "/snap/core18/2829/bin/su",
+            "/snap/core18/2829/bin/umount", "/snap/core18/2829/sbin/pam_extrausers_chkpwd",
+            "/snap/core18/2829/sbin/unix_chkpwd", "/snap/core18/2829/usr/bin/chage",
+            "/snap/core18/2829/usr/bin/chfn", "/snap/core18/2829/usr/bin/chsh", "/snap/core18/2829/usr/bin/expiry",
+            "/snap/core18/2829/usr/bin/gpasswd", "/snap/core18/2829/usr/bin/newgrp", "/snap/core18/2829/usr/bin/passwd",
+            "/snap/core18/2829/usr/bin/ssh-agent", "/snap/core18/2829/usr/bin/sudo", "/snap/core18/2829/usr/bin/wall",
+            "/snap/core18/2829/usr/lib/dbus-1.0/dbus-daemon-launch-helper", "/snap/core18/2829/usr/lib/openssh/ssh-keysign",
+            "/snap/snapd/21759/usr/lib/snapd/snap-confine", "/snap/core20/2379/usr/bin/chage",
+            "/snap/core20/2379/usr/bin/chfn", "/snap/core20/2379/usr/bin/chsh", "/snap/core20/2379/usr/bin/expiry",
+            "/snap/core20/2379/usr/bin/gpasswd", "/snap/core20/2379/usr/bin/mount", "/snap/core20/2379/usr/bin/newgrp",
+            "/snap/core20/2379/usr/bin/passwd", "/snap/core20/2379/usr/bin/ssh-agent", "/snap/core20/2379/usr/bin/su",
+            "/snap/core20/2379/usr/bin/sudo", "/snap/core20/2379/usr/bin/umount", "/snap/core20/2379/usr/lib/dbus-1.0/dbus-daemon-launch-helper",
+            "/snap/core20/2379/usr/lib/openssh/ssh-keysign", "/snap/core20/2379/usr/sbin/pam_extrausers_chkpwd",
+            "/snap/core20/2379/usr/sbin/unix_chkpwd", "/usr/lib/snapd/snap-confine", "/usr/bin/ssh-agent",
             "/snap/core20/1822/usr/bin/chage", "/snap/core20/1822/usr/bin/chfn", "/snap/core20/1822/usr/bin/chsh",
             "/snap/core20/1822/usr/bin/expiry", "/snap/core20/1822/usr/bin/gpasswd", "/snap/core20/1822/usr/bin/mount",
             "/snap/core20/1822/usr/bin/newgrp", "/snap/core20/1822/usr/bin/passwd", "/snap/core20/1822/usr/bin/su",
             "/snap/core20/1822/usr/bin/sudo", "/snap/core20/1822/usr/bin/umount", "/snap/core20/1822/usr/bin/wall",
-            "/snap/core20/1822/usr/lib/dbus-1.0/dbus-daemon-launch-helper",
-            "/snap/core20/1822/usr/lib/openssh/ssh-keysign", "/snap/core20/1822/usr/lib/snapd/snap-confine",
-            "/usr/lib/snapd/snap-confine", "/usr/bin/ssh-agent", "/snap/snapd/18357/usr/lib/snapd/snap-confine",
-            "/snap/core20/1822/usr/bin/ssh-agent", "/snap/core20/1822/usr/sbin/pam_extrausers_chkpwd",
-            "/snap/core20/1822/usr/sbin/unix_chkpwd", "/usr/sbin/unix_chkpwd", "/usr/sbin/pam_extrausers_chkpwd",
-            "/usr/bin/at"
+            "/snap/core20/1822/usr/lib/dbus-1.0/dbus-daemon-launch-helper", "/snap/core20/1822/usr/lib/openssh/ssh-keysign",
+            "/snap/core20/1822/usr/lib/snapd/snap-confine", "/snap/core20/1822/usr/bin/ssh-agent",
+            "/snap/core20/1822/usr/sbin/pam_extrausers_chkpwd", "/snap/core20/1822/usr/sbin/unix_chkpwd",
+            "/usr/sbin/unix_chkpwd", "/usr/sbin/pam_extrausers_chkpwd", "/usr/bin/at"
         }
+
 
         # Run the find command, excluding problematic directories like /proc, /sys, and /dev
         result = subprocess.run(
