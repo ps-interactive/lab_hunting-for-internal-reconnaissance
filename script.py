@@ -234,29 +234,7 @@ def challenge1_step5_ssh_keys():
                     print(f"Error accessing {ssh_dir}: {e}")
     print(f"SSH keys and configurations have been saved to '{output_file}'.")
 
-def challenge1_step6_user_enumeration():
-    """Challenge 1, Step 6: Search bash history for user enumeration commands."""
-    output_file = "bash_history_user_commands.txt"
-    with open(output_file, "a") as f:
-        user_dirs = list(Path("/home").glob("*/")) + [Path("/root")]
-
-        for user_dir in user_dirs:
-            username = user_dir.name
-            history_file = user_dir / ".bash_history"
-            if history_file.exists():
-                try:
-                    with history_file.open() as file:
-                        for line in file:
-                            if "whoami" in line or "cat /etc/passwd" in line:
-                                log_entry = f"User: {username} | Command: {line.strip()}"
-                                print(log_entry)
-                                f.write(log_entry + "\n")
-                except Exception as e:
-                    print(f"Error accessing {history_file}: {e}")
-    print(f"User enumeration commands have been appended to '{output_file}'.")
-
-def challenge1_step7_failed_logins():
-    """Challenge 1, Step 8: Analyze authentication logs for failed login attempts."""
+def challenge1_step6_failed_logins():
     try:
         # Use journalctl with grep to find lines that contain "Failed" for error-level messages
         result = subprocess.run(
@@ -274,7 +252,7 @@ def challenge1_step7_failed_logins():
         print(f"Error analyzing authentication logs: {e}")
 
 
-def challenge1_step8_system_logs():
+def challenge1_step7_system_logs():
     """Challenge 1, Step 9: Review system logs for suspicious activities."""
     try:
         # Search syslog for error, fail, warning, or critical messages
@@ -297,7 +275,7 @@ def challenge1_step8_system_logs():
         print(f"Error reviewing system logs: {e}")
 
 
-def challenge1_step9_hidden_files():
+def challenge1_step8_hidden_files():
     """Challenge 1, Step 10: Search for uncommon hidden files in user directories."""
     output_file = "uncommon_hidden_files.txt"
 
@@ -335,7 +313,7 @@ def challenge1_step9_hidden_files():
     print(f"Uncommon hidden files have been saved to '{output_file}'.")
 
 
-def challenge1_step10_sensitive_file_access():
+def challenge1_step9_sensitive_file_access():
     """Challenge 1, Step 11: Check bash history for access to sensitive directories."""
     output_file = "bash_history_user_commands.txt"
     with open(output_file, "a") as f:
@@ -357,7 +335,7 @@ def challenge1_step10_sensitive_file_access():
     print(f"Commands accessing sensitive files have been appended to '{output_file}'.")
 
 
-def challenge1_step11_cron_jobs_services():
+def challenge1_step10_cron_jobs_services():
     """Challenge 1, Step 13: Investigate cron jobs and system services for persistence."""
     try:
         # Dictionary to hold cron jobs for each user
@@ -652,17 +630,15 @@ def main(challenge, step):
         elif step == "5":
             challenge1_step5_ssh_keys()
         elif step == "6":
-            challenge1_step6_user_enumeration()
+            challenge1_step6_failed_logins()
         elif step == "7":
-            challenge1_step7_failed_logins()
+            challenge1_step7_system_logs()
         elif step == "8":
-            challenge1_step8_system_logs()
+            challenge1_step8_hidden_files()
         elif step == "9":
-            challenge1_step9_hidden_files()
+            challenge1_step9_sensitive_file_access()
         elif step == "10":
-            challenge1_step10_sensitive_file_access()
-        elif step == "11":
-            challenge1_step11_cron_jobs_services()
+            challenge1_step10_cron_jobs_services()
         else:
             print("Invalid step number for Challenge 1.")
     elif challenge == "2":
