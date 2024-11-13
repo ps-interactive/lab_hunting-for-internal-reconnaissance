@@ -253,9 +253,18 @@ def cleanup_auditd():
 def start_generic_process():
     random_user = random.choice(USERS)
     worker_path = "/tmp/worker"
+    
+    # Check if the process is already running
+    if subprocess.run(["pgrep", "-f", worker_path], stdout=subprocess.DEVNULL).returncode == 0:
+        print(f"High-CPU process 'worker' is already running for some user. Skipping start.")
+        return
+    
+    # Set up the worker executable if not running
     shutil.copy("/usr/bin/yes", worker_path)
     os.chmod(worker_path, 0o755)
     print(f"Starting high-CPU process 'worker' for user {random_user}")
+    
+    # Start the process for the chosen user
     subprocess.Popen(f"su - {random_user} -c '{worker_path} > /dev/null &'", shell=True)
     print(f"High-CPU process 'worker' started for user '{random_user}'")
 
