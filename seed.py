@@ -344,7 +344,7 @@ def generate_firewall_logs():
                    f"PROTO={protocol} SPT={src_port} DPT={dst_port} WINDOW=0 RES=0x00 SYN URGP=0")
 
         # Send the log message using the logger command
-        subprocess.run(["logger", "-p", "kern.warning", "-t", "iptables"], input=message, text=True)
+        subprocess.run(["sudo", "logger", "-p", "kern.warning", "-t", "iptables"], input=message, text=True)
     
     print("Firewall logs generated for dropped packets")
 
@@ -363,7 +363,7 @@ def generate_system_logs():
         "kernel: [12345.678903] ERROR: Disk read failure on /dev/sda1",
     ]
     for msg in messages:
-        subprocess.run(["logger", "-p", "kern.err", msg])
+        subprocess.run(["sudo", "logger", "-p", "kern.err", msg])
     print("System logs generated with errors and warnings")
 
 def create_ssh_key_for_user(username):
