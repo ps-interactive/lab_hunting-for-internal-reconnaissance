@@ -313,7 +313,7 @@ def challenge1_step8_hidden_files():
 
 
 def challenge1_step9_sensitive_file_access():
-    """Challenge 1, Step 11: Check bash history for access to sensitive directories."""
+
     output_file = "bash_history_user_commands.txt"
     with open(output_file, "a") as f:
         user_dirs = list(Path("/home").glob("*/")) + [Path("/root")]
@@ -428,8 +428,7 @@ def challenge2_step2_active_connections():
     except Exception as e:
         print(f"Error listing network connections: {e}")
 
-def challenge2_step3_arp_cache():
-    """Challenge 2, Step 3: Analyze ARP cache for unusual entries."""
+def challenge2_step4_arp_cache():
     try:
         # Get ARP cache entries
         result = subprocess.run(
@@ -446,8 +445,7 @@ def challenge2_step3_arp_cache():
     except Exception as e:
         print(f"Error analyzing ARP cache: {e}")
 
-def challenge2_step4_listening_services():
-    """Challenge 2, Step 4: Check for unauthorized listening services."""
+def challenge2_step3_listening_services():
     try:
         # List all listening TCP ports and associated processes
         result = subprocess.run(
@@ -464,27 +462,11 @@ def challenge2_step4_listening_services():
     except Exception as e:
         print(f"Error checking listening services: {e}")
 
-def challenge2_step5_scanning_patterns():
-    """Challenge 2, Step 6: Analyze logs for scanning patterns or brute-force attacks."""
-    try:
-        # Search auth.log for failed login attempts and sshd entries
-        result = subprocess.run(
-            ["sudo", "grep", "-E", "Failed|sshd", "/var/log/auth.log"],
-            stdout=subprocess.PIPE,
-            text=True
-        )
-        scanning_attempts = result.stdout
-        print("Scanning patterns or brute-force attempts:")
-        print(scanning_attempts)
-    except Exception as e:
-        print(f"Error analyzing logs for scanning patterns: {e}")
-
-def challenge2_step6_firewall_logs():
-    """Challenge 2, Step 7: Check firewall logs for dropped packets or blocked scans."""
+def challenge2_step5_firewall_logs():
     try:
         # Search firewall logs for dropped packets
         result = subprocess.run(
-            ["sudo", "grep", "-i", "DROP", "/var/log/iptables.log"],
+            "sudo journalctl | grep 'DROP'",
             stdout=subprocess.PIPE,
             text=True
         )
@@ -497,7 +479,7 @@ def challenge2_step6_firewall_logs():
     except Exception as e:
         print(f"Error checking firewall logs: {e}")
 
-def challenge2_step7_temp_directories():
+def challenge2_step6_temp_directories():
     """Challenge 2, Step 8: Search temporary directories for uploaded reconnaissance tools."""
     output_file = "temp_directory_analysis.txt"
     with open(output_file, "w") as f:
@@ -516,7 +498,7 @@ def challenge2_step7_temp_directories():
             print(f"Error searching temporary directories: {e}")
     print(f"Reconnaissance tools have been saved to '{output_file}'.")
 
-def challenge2_step8_recently_modified_files():
+def challenge2_step7_recently_modified_files():
     """Challenge 2, Step 9: Investigate recently modified files in /tmp and /var/tmp."""
     output_file = "recently_modified_files.txt"
     with open(output_file, "w") as f:
@@ -535,7 +517,7 @@ def challenge2_step8_recently_modified_files():
             print(f"Error listing recently modified files: {e}")
     print(f"Recently modified files have been saved to '{output_file}'.")
 
-def challenge2_step9_ssh_logs():
+def challenge2_step8_ssh_logs():
     """Challenge 2, Step 10: Inspect SSH configuration and logs for unauthorized access."""
     try:
         # Get accepted and failed SSH login attempts
@@ -561,7 +543,7 @@ def challenge2_step9_ssh_logs():
     except Exception as e:
         print(f"Error analyzing SSH logs: {e}")
 
-def challenge2_step10_tunneling_processes():
+def challenge2_step9_tunneling_processes():
     """Challenge 2, Step 11: Search for tunneling or port forwarding processes."""
     try:
         # List all running processes
@@ -583,7 +565,7 @@ def challenge2_step10_tunneling_processes():
     except Exception as e:
         print(f"Error searching for tunneling processes: {e}")
 
-def challenge2_step11_at_jobs():
+def challenge2_step10_at_jobs():
     """Challenge 2, Step 12: Check for suspicious scheduled tasks in at jobs."""
     try:
         # List all scheduled at jobs
@@ -601,7 +583,7 @@ def challenge2_step11_at_jobs():
     except Exception as e:
         print(f"Error checking at jobs: {e}")
 
-def challenge2_step12_hosts_file():
+def challenge2_step11_hosts_file():
     """Challenge 2, Step 13: Examine /etc/hosts for unauthorized changes."""
     try:
         # Read the /etc/hosts file
@@ -645,28 +627,26 @@ def main(challenge, step):
             challenge2_step1_network_commands()
         elif step == "2":
             challenge2_step2_active_connections()
-        elif step == "3":
-            challenge2_step3_arp_cache()
         elif step == "4":
-            challenge2_step4_listening_services()
+            challenge2_step4_arp_cache()
+        elif step == "3":
+            challenge2_step3_listening_services()
         elif step == "5":
-            challenge2_step5_scanning_patterns()
+            challenge2_step5_firewall_logs()
         elif step == "6":
-            challenge2_step6_firewall_logs()
+            challenge2_step6_temp_directories()
         elif step == "7":
-            challenge2_step7_temp_directories()
+            challenge2_step7_recently_modified_files()
         elif step == "8":
-            challenge2_step8_recently_modified_files()
+            challenge2_step8_ssh_logs()
         elif step == "9":
-            challenge2_step9_ssh_logs()
+            challenge2_step9_tunneling_processes()
         elif step == "10":
-            challenge2_step10_tunneling_processes()
+            challenge2_step10_at_jobs()
         elif step == "11":
-            challenge2_step11_at_jobs()
+            challenge2_step11_hosts_file()
         elif step == "12":
-            challenge2_step12_hosts_file()
-        elif step == "13":
-            challenge2_step13_environment_variables()
+            challenge2_step12_environment_variables()
         else:
             print("Invalid step number for Challenge 2.")
     else:
