@@ -218,7 +218,7 @@ def create_cron_jobs():
 # Create at jobs to simulate scheduled tasks
 def create_at_jobs():
     print("Creating at jobs for users")
-    interval = 5  # Interval in minutes
+    interval = 30  # Interval in minutes
 
     for idx, user in enumerate(USERS):
         # Calculate the time offset by interval * index (e.g., 5, 10, 15 minutes, etc.)

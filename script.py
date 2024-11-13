@@ -529,34 +529,7 @@ def challenge2_step7_recently_modified_files():
             print(f"Error listing recently modified files: {e}")
     print(f"Recently modified files have been saved to '{output_file}'.")
 
-def challenge2_step8_ssh_logs():
-    """Challenge 2, Step 10: Inspect SSH configuration and logs for unauthorized access."""
-    try:
-        # Get accepted and failed SSH login attempts
-        result_accepted = subprocess.run(
-            ["sudo", "grep", "Accepted", "/var/log/auth.log"],
-            stdout=subprocess.PIPE,
-            text=True
-        )
-        result_failed = subprocess.run(
-            ["sudo", "grep", "Failed", "/var/log/auth.log"],
-            stdout=subprocess.PIPE,
-            text=True
-        )
-        with open("ssh_access.log", "w") as f:
-            f.write(result_accepted.stdout)
-        with open("ssh_failed.log", "w") as f:
-            f.write(result_failed.stdout)
-        print("SSH accepted login attempts:")
-        print(result_accepted.stdout)
-        print("SSH failed login attempts:")
-        print(result_failed.stdout)
-        print("SSH logs have been saved to 'ssh_access.log' and 'ssh_failed.log'.")
-    except Exception as e:
-        print(f"Error analyzing SSH logs: {e}")
-
-def challenge2_step9_tunneling_processes():
-    """Challenge 2, Step 11: Search for tunneling or port forwarding processes."""
+def challenge2_step8_tunneling_processes():
     try:
         # List all running processes
         result = subprocess.run(
@@ -577,8 +550,7 @@ def challenge2_step9_tunneling_processes():
     except Exception as e:
         print(f"Error searching for tunneling processes: {e}")
 
-def challenge2_step10_at_jobs():
-    """Challenge 2, Step 12: Check for suspicious scheduled tasks in at jobs."""
+def challenge2_step9_at_jobs():
     try:
         # List all scheduled at jobs
         result = subprocess.run(
@@ -595,7 +567,7 @@ def challenge2_step10_at_jobs():
     except Exception as e:
         print(f"Error checking at jobs: {e}")
 
-def challenge2_step11_hosts_file():
+def challenge2_step10_hosts_file():
     """Challenge 2, Step 13: Examine /etc/hosts for unauthorized changes."""
     try:
         # Read the /etc/hosts file
@@ -650,15 +622,11 @@ def main(challenge, step):
         elif step == "7":
             challenge2_step7_recently_modified_files()
         elif step == "8":
-            challenge2_step8_ssh_logs()
+            challenge2_step8_tunneling_processes()
         elif step == "9":
-            challenge2_step9_tunneling_processes()
+            challenge2_step9_at_jobs()
         elif step == "10":
-            challenge2_step10_at_jobs()
-        elif step == "11":
-            challenge2_step11_hosts_file()
-        elif step == "12":
-            challenge2_step12_environment_variables()
+            challenge2_step10_hosts_file()
         else:
             print("Invalid step number for Challenge 2.")
     else:
