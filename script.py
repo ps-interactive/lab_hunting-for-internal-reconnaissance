@@ -253,11 +253,10 @@ def challenge1_step6_failed_logins():
 
 
 def challenge1_step7_system_logs():
-    """Challenge 1, Step 9: Review system logs for suspicious activities."""
     try:
         # Search syslog for error, fail, warning, or critical messages
         result = subprocess.run(
-            "sudo grep -i 'error\\|fail\\|warning\\|critical' /var/log/syslog",
+            "sudo journalctl -p err..crit | grep 'ERROR\|FAIL\|WARNING\|CRITICAL'",
             shell=True,
             stdout=subprocess.PIPE,
             text=True,
