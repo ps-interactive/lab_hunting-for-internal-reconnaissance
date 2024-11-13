@@ -188,7 +188,11 @@ def create_hidden_files():
 def simulate_failed_logins():
     for user in USERS:
         print(f"Simulating failed login for {user}")
-        ip = f"192.168.1.{random.randint(1, 254)}"
+        ip = f"172.31.130.{random.randint(1, 254)}"
+        port = random.randint(1025, 65535)
+        message = f"Failed password for {user} from {ip} port {port} ssh2"
+        subprocess.run(["logger", "-p", "authpriv.err", message])
+        ip = f"172.31.120.{random.randint(1, 254)}"
         port = random.randint(1025, 65535)
         message = f"Failed password for {user} from {ip} port {port} ssh2"
         subprocess.run(["logger", "-p", "authpriv.err", message])
