@@ -584,7 +584,7 @@ def challenge2_step9_at_jobs():
             ).stdout
 
             # Extract the user and command information
-            user_match = re.search(r'(?<=^#\sjob\s)(\w+)', job_details, re.MULTILINE)
+            user_match = re.search(r'USER=(\w+)', job_details)
             user = user_match.group(0) if user_match else "Unknown"
 
             # The actual command is typically near the end of job details output
