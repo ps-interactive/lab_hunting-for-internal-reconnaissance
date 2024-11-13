@@ -143,6 +143,7 @@ def execute_command_old(user, commands):
 # Seed each user with a progressive attack pattern for bash history logging and auditd tracking
 def seed_user_activity():
     for user in USERS:
+    for user in USERS:
         print(f"Seeding activity for user {user}")
         if user == "pslearner":
             commands = ["whoami", "id", "uname -a", "ls /home"]
@@ -452,61 +453,61 @@ def main():
     configure_auditd()
 
     # Create users if they don't exist
-    #create_users()
+    create_users()
 
     # Seed user activities
-    #seed_user_activity()
+    seed_user_activity()
 
     # Create hidden files
-    #create_hidden_files()
+    create_hidden_files()
 
     # Simulate failed login attempts
-    #simulate_failed_logins()
+    simulate_failed_logins()
 
     # Create cron jobs
-    #create_cron_jobs()
+    create_cron_jobs()
 
     # Create at jobs
-    #create_at_jobs()
+    create_at_jobs()
 
     # Start a high-CPU "worker" process
-    #start_generic_process()
+    start_generic_process()
 
     # Modify /etc/sudoers
-    #modify_sudoers()
+    modify_sudoers()
 
     # Create Setuid and Setgid files
-    #create_setuid_setgid_files()
+    create_setuid_setgid_files()
 
     # Modify /etc/hosts
-    #modify_hosts_file()
+    modify_hosts_file()
 
     # Create dummy shared object for LD_PRELOAD
-    #create_dummy_shared_object()
+    create_dummy_shared_object()
 
     # Set malicious environment variables
-    #set_environment_variables()
+    set_environment_variables()
 
     # Place tools in temporary directories
-    #place_tools_in_tmp()
+    place_tools_in_tmp()
 
     # Generate firewall logs
-    #generate_firewall_logs()
+    generate_firewall_logs()
 
     # Generate system logs
-    #generate_system_logs()
+    generate_system_logs()
 
     # Create SSH tunnel
-    #create_ssh_tunnel()
+    create_ssh_tunnel()
 
     # Start unauthorized services
-    #start_unauthorized_services()
+    start_unauthorized_services()
 
     # Manipulate ARP cache
-    #manipulate_arp_cache()
+    manipulate_arp_cache()
 
     # Wait for a moment to ensure commands are executed
-    #time.sleep(5)
+    time.sleep(5)
 
     # Remove temporary audit rules after seeding
     cleanup_auditd()
