@@ -559,11 +559,45 @@ def challenge2_step9_at_jobs():
             text=True
         )
         at_jobs = result.stdout
+
+        if not at_jobs.strip():
+            print("No scheduled at jobs found.")
+            return
+
+        # Save and display the list of at jobs
         with open("at_jobs.txt", "w") as f:
             f.write(at_jobs)
         print("Scheduled at jobs:")
         print(at_jobs)
         print("At jobs have been saved to 'at_jobs.txt'.")
+
+        # Loop through each job to retrieve the user and command
+        detailed_jobs = []
+        for line in at_jobs.strip().splitlines():
+            job_id = line.split()[0]  # Extract the job ID from the first part of the line
+
+            # Retrieve the job details
+            job_details = subprocess.run(
+                ["sudo", "at", "-c", job_id],
+                stdout=subprocess.PIPE,
+                text=True
+            ).stdout
+
+            # Extract the user and command information
+            user_match = re.search(r'(?<=^#\sjob\s)(\w+)', job_details, re.MULTILINE)
+            user = user_match.group(0) if user_match else "Unknown"
+
+            # The actual command is typically near the end of job details output
+            command_match = re.search(r'(?<=^).*?\n$', job_details, re.MULTILINE)
+            command = command_match.group(0).strip() if command_match else "No command found"
+
+            detailed_jobs.append(f"Job ID: {job_id}, User: {user}, Command: {command}")
+
+        # Display detailed job info
+        print("\nDetailed at job information:")
+        for job in detailed_jobs:
+            print(job)
+
     except Exception as e:
         print(f"Error checking at jobs: {e}")
 
