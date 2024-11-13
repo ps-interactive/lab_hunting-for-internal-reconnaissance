@@ -143,7 +143,6 @@ def execute_command_old(user, commands):
 # Seed each user with a progressive attack pattern for bash history logging and auditd tracking
 def seed_user_activity():
     for user in USERS:
-    for user in USERS:
         print(f"Seeding activity for user {user}")
         if user == "pslearner":
             commands = ["whoami", "id", "uname -a", "ls /home"]
