@@ -464,18 +464,30 @@ def challenge2_step3_listening_services():
 
 def challenge2_step5_firewall_logs():
     try:
-        # Search firewall logs for dropped packets
+        # Run the command to search for 'DROP' in firewall logs, with shell=True for single-string command
         result = subprocess.run(
             "sudo journalctl | grep 'DROP'",
             stdout=subprocess.PIPE,
-            text=True
+            stderr=subprocess.PIPE,
+            text=True,
+            shell=True
         )
+        
+        # Check for errors in case of permission issues
+        if result.returncode != 0:
+            print("Error: Unable to access firewall logs. Ensure you have the necessary permissions.")
+            print(f"Details: {result.stderr}")
+            return
+        
+        # Save and print the output if successful
         firewall_logs = result.stdout
         with open("firewall_logs.txt", "w") as f:
             f.write(firewall_logs)
+        
         print("Firewall log entries for dropped packets or blocked scans:")
         print(firewall_logs)
         print("Firewall logs have been saved to 'firewall_logs.txt'.")
+    
     except Exception as e:
         print(f"Error checking firewall logs: {e}")
 
